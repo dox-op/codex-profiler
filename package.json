@@ -1,0 +1,22 @@
+{
+  "name": "codex-profiler",
+  "version": "0.1.0",
+  "description": "CLI tool to manage multiple Codex profiles (enterprise vs personal)",
+  "bin": {
+    "codex-profiler": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js"
+  },
+  "author": "Enrico Pezzini",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  },
+  "volta": {
+    "node": "24.11.0"
+  }
+}
