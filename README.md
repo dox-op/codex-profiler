@@ -1,43 +1,59 @@
 # codex-profiler
 
-Gestore CLI per profili Codex da terminale. Permette di creare profili **enterprise** (OpenAI Platform) e **personal** (ChatGPT Plus) e di richiamare il profilo attivo con un unico comando `codex-profiler run`.
+A small CLI utility to juggle multiple Codex profiles. Enterprise profiles target the OpenAI Platform (`codex` CLI with
+`CODEX_API_KEY`), while personal profiles open ChatGPT Plus in the browser.
 
-## Caratteristiche
-- Linguaggio: TypeScript con output compilato in `dist/`.
-- Configurazione persistente in `~/.codex-profiler/config.json`.
-- Prompt interattivo per scegliere il tipo di profilo e, se necessario, l'API key.
-- Per profili `platform`, esporta `CODEX_API_KEY` e avvia `codex`.
-- Per profili `web`, apre `https://chat.openai.com` usando `xdg-open` (Linux) o `open` (macOS).
-- CLI pubblicabile su npm e installabile globalmente (`codex-profiler` nel `PATH`).
+## Features
 
-## Installazione
+- Written in TypeScript; compiled output lives in `dist/`.
+- Persistent configuration at `~/.codex-profiler/config.json`.
+- Interactive prompts for profile kind plus API key capture when needed.
+- `codex-profiler run` automatically checks for a `.codex` file in the current directory and switches to the declared
+  profile before executing a command.
+- Platform profiles export `CODEX_API_KEY` and shell out to `codex`.
+- Web profiles open `https://chat.openai.com` via `xdg-open` (Linux) or `open` (macOS).
+
+## Installation
 ```bash
 pnpm install
-pnpm run build       # produce dist/index.js
+pnpm run build          # emits dist/index.js
 pnpm install -g .
-# oppure
+# or consume from npm
 npm install -g codex-profiler
 ```
 
-## Utilizzo rapido
+## Quick Start
 ```bash
-codex-profiler add enterprise   # imposta nome profilo e completa i prompt (tipo + API key)
+codex-profiler add enterprise   # enter the profile type + API key via prompts
 codex-profiler add personal
-codex-profiler list             # mostra elenco profili e profilo attivo
-codex-profiler use enterprise   # imposta il profilo attivo
-codex-profiler run ai-start.sh  # inoltra il comando ad `codex` oppure apre ChatGPT
+codex-profiler list             # shows stored profiles and the active one
+codex-profiler use enterprise   # sets the active profile
+codex-profiler run ai-start.sh  # forwards to codex or opens ChatGPT depending on the profile
 ```
 
-### Dettaglio comandi
-- `add <nome>`: crea/aggiorna un profilo. Chiede il tipo (`platform` o `web`) e l'API key solo per i profili platform. Il primo profilo creato diventa automaticamente attivo.
-- `use <nome>`: imposta il profilo attivo.
-- `list`: riepiloga i profili salvati mostrando quale è attivo.
-- `run [argomenti...]`:  
-  - se il profilo attivo è `platform`, esporta `CODEX_API_KEY` e lancia `codex [argomenti...]`;  
-  - se il profilo attivo è `web`, apre la web app ChatGPT Plus nel browser di sistema.
+### `.codex` auto profile detection
 
-## File di configurazione
-Il file `~/.codex-profiler/config.json` mantiene struttura:
+Inside any project directory you can drop a `.codex` file:
+
+```json
+{
+  "profile": "enterprise"
+}
+```
+
+When you run `codex-profiler run ...`, the CLI:
+
+1. Reads `.codex` (if present) and looks for the `profile` field.
+2. Switches the active profile automatically, persisting the change to `config.json`.
+3. Logs `Detected .codex → switching to profile enterprise`.
+4. Executes the requested command using the new context.
+
+If the referenced profile does not exist, the command exits with an error so you can create it first.
+
+## Configuration file
+
+Located at `~/.codex-profiler/config.json`:
+
 ```json
 {
   "active": "enterprise",
@@ -50,9 +66,10 @@ Il file `~/.codex-profiler/config.json` mantiene struttura:
 
 ## Build & publish
 ```bash
-pnpm run build               # compila TypeScript in dist/
-pnpm install -g .            # test locale globale
-pnpm publish --access public # o npm publish
+pnpm run build               # compile TypeScript
+pnpm install -g .            # smoke-test the global install
+pnpm publish --access public # or npm publish
 ```
 
-Il pacchetto risultante è immediatamente utilizzabile con `npm install -g codex-profiler`.
+After publishing, users can install it globally with `npm install -g codex-profiler` and immediately run the four
+supported commands: `add`, `use`, `list`, and `run`.

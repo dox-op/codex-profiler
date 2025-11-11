@@ -3,7 +3,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import readline from "readline";
-import { execSync } from "child_process";
+import {execSync} from "child_process";
 
 type ProfileType = "platform" | "web";
 
@@ -19,6 +19,7 @@ interface Config {
 
 const CONFIG_DIR = path.join(os.homedir(), ".codex-profiler");
 const CONFIG_PATH = path.join(CONFIG_DIR, "config.json");
+const PROJECT_CODEX_PATH = path.join(process.cwd(), ".codex");
 const CHATGPT_URL = "https://chat.openai.com";
 
 function ensureConfigDir(): void {
@@ -207,6 +208,9 @@ function openChatGPT(): void {
 }
 
 function handleRun(args: string[], config: Config): void {
+    if (!applyProjectCodexProfile(config)) {
+        return;
+    }
     const resolved = resolveActiveProfile(config);
     if (!resolved) {
         return;
@@ -216,6 +220,44 @@ function handleRun(args: string[], config: Config): void {
         runCodex(args, profile);
     } else {
         openChatGPT();
+    }
+}
+
+function applyProjectCodexProfile(config: Config): boolean {
+    if (!fs.existsSync(PROJECT_CODEX_PATH)) {
+        return true;
+    }
+
+    try {
+        const raw = fs.readFileSync(PROJECT_CODEX_PATH, "utf8");
+        const parsed = JSON.parse(raw);
+        let profileName = "";
+        if (parsed && typeof parsed === "object") {
+            const candidate = (parsed as { profile?: unknown }).profile;
+            if (typeof candidate === "string") {
+                profileName = candidate.trim();
+            }
+        }
+        if (!profileName) {
+            return true;
+        }
+
+        if (!config.profiles[profileName]) {
+            console.error(
+                `Profile '${profileName}' referenced by .codex does not exist. Create it first with 'codex-profiler add ${profileName}'.`,
+            );
+            process.exitCode = 1;
+            return false;
+        }
+
+        config.active = profileName;
+        saveConfig(config);
+        console.log(`Detected .codex → switching to profile ${profileName}`);
+        return true;
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.warn(`Unable to read .codex file: ${message}`);
+        return true;
     }
 }
 

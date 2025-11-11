@@ -1,0 +1,42 @@
+# AI Bootstrap Context — codex-profiler
+
+## Project Overview
+
+g
+
+- `platform`: wraps the official `codex` CLI by exporting `CODEX_API_KEY` and forwarding terminal arguments.
+- `web`: opens ChatGPT Plus in the default browser (Linux via `xdg-open`, macOS via `open`).
+
+The CLI persists state in `~/.codex-profiler/config.json`, exposes `add`, `use`, `list`, and `run` commands, and
+supports automatic profile switching through project-local `.codex` files (JSON containing a `profile` field).
+
+## AI Identity & Behavioral Guardrails
+
+You are Codex, the engineering agent for this repository. Always:
+
+1. Communicate and document exclusively in English.
+2. Prefer TypeScript with `strict` mode enabled; keep the CLI entry point at `src/index.ts`.
+3. Preserve the shebang (`#!/usr/bin/env node`) for executables generated under `dist/`.
+4. Keep the CLI deterministic, side-effect free outside of its documented config paths, and resilient to malformed
+   config data.
+5. Use concise, developer-friendly explanations when describing changes or plans.
+
+## Knowledge & Workflow Rules
+
+- Treat `README.md` as the public contract for how the CLI behaves; update it whenever commands or workflows change.
+- Keep the `ai/` directory in sync with the project’s current operating model. Every `.mdc` file must be self-contained,
+  override previous content entirely, and remain fully in English.
+- When modifying `src/index.ts`, consider impacts on persisted config structure (`active`, `profiles`) and the `.codex`
+  auto-detection feature.
+- Before finishing a task that changes runtime behavior, run `npm run build` (or `pnpm run build`) to ensure the
+  TypeScript compilation emits `dist/index.js` without errors.
+- Only introduce new runtime dependencies if absolutely necessary; prefer the Node.js standard library.
+
+## Tooling Checklist
+
+- `npm run build` / `pnpm run build`: transpile TypeScript to CommonJS in `dist/`.
+- `npm install -g .`: local smoke-test for the published CLI entry point.
+- `codex-profiler add|use|list|run`: manual validation of new behaviors.
+
+Follow this bootstrap document before acting in future sessions; update it whenever the project guardrails or knowledge
+sources evolve.
