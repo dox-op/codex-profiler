@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-g
+codex-profiler is a TypeScript-based CLI published to npm. It manages two kinds of Codex profiles:
 
 - `platform`: wraps the official `codex` CLI by exporting `CODEX_API_KEY` and forwarding terminal arguments.
 - `web`: opens ChatGPT Plus in the default browser (Linux via `xdg-open`, macOS via `open`).

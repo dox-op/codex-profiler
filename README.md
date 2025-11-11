@@ -4,7 +4,6 @@ A small CLI utility to juggle multiple Codex profiles. Enterprise profiles targe
 `CODEX_API_KEY`), while personal profiles open ChatGPT Plus in the browser.
 
 ## Features
-
 - Written in TypeScript; compiled output lives in `dist/`.
 - Persistent configuration at `~/.codex-profiler/config.json`.
 - Interactive prompts for profile kind plus API key capture when needed.
@@ -32,7 +31,6 @@ codex-profiler run ai-start.sh  # forwards to codex or opens ChatGPT depending o
 ```
 
 ### `.codex` auto profile detection
-
 Inside any project directory you can drop a `.codex` file:
 
 ```json
@@ -42,7 +40,6 @@ Inside any project directory you can drop a `.codex` file:
 ```
 
 When you run `codex-profiler run ...`, the CLI:
-
 1. Reads `.codex` (if present) and looks for the `profile` field.
 2. Switches the active profile automatically, persisting the change to `config.json`.
 3. Logs `Detected .codex → switching to profile enterprise`.
@@ -51,7 +48,6 @@ When you run `codex-profiler run ...`, the CLI:
 If the referenced profile does not exist, the command exits with an error so you can create it first.
 
 ## Configuration file
-
 Located at `~/.codex-profiler/config.json`:
 
 ```json
